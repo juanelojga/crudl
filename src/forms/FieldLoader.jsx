@@ -77,17 +77,19 @@ class FieldLoader extends React.Component {
         }
 
         // Watch for other fields if required
-        if (desc.onChange) {
-            asArray(desc.onChange).forEach((w) => {
-                asArray(w.in).forEach((name) => {
-                    watch(`fields.${name}`, props => this.handleOnChange(w, props))
-                })
-            })
-        }
+//         if (desc.onChange) {
+//             asArray(desc.onChange).forEach((w) => {
+//                 asArray(w.in).forEach((name) => {
+//                     watch(`fields.${name}`, props => this.handleOnChange(w, props))
+//                 })
+//             })
+//         }
 
         // Extend the descriptor asynchronously
         const descPromise = Promise.resolve(this.props.desc.lazy())
-        descPromise.then(asyncDesc => this.setState(asyncDesc))
+        descPromise.then((asyncDesc) => {
+            this.setState(asyncDesc)
+        })
 
         watch('reload', (props) => {
             if (props.reload) {
@@ -101,9 +103,13 @@ class FieldLoader extends React.Component {
         // Select a subset of the context
         const fields = asArray(onChange.in).map(name => props.fields[name])
 
+        const result = asFunc(onChange.setProps)(...fields)
+
         // Set the props
         Promise.method(asFunc(onChange.setProps))(...fields)
-        .then(newProps => this.setState(newProps))
+        .then((newProps) => {
+            this.setState(newProps)
+        })
         .catch(e => console.error(`In 'onChange.setProps' of ${props.desc.id}:`, e))
 
         // Set the value
