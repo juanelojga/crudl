@@ -1,6 +1,7 @@
-import get from 'lodash/get'
-import isEqual from 'lodash/isEqual'
+'use strict'
+
 import React from 'react'
+import _ from 'lodash'
 
 function chain(func1, func2) {
     func1 = func1 || (() => undefined) // eslint-disable-line no-param-reassign
@@ -44,7 +45,21 @@ function withPropsWatch(Component) {
                 checkNow: false,
                 // used to decide when to invoke the callback
                 watchCondition: (nextValue, lastValue) => {
-                    return !isEqual(nextValue, lastValue)
+                    let next, last
+
+                    if (nextValue) {
+                        next = _.pick(nextValue, ['value', 'initialValue'])
+                    } else {
+                        next = _.set(nextValue)
+                    }
+
+                    if (lastValue) {
+                        last = _.pick(lastValue, ['value', 'initialValue'])
+                    } else {
+                        last = _.set(lastValue)
+                    }
+
+                    return !_.isEqual(next, last)
                 },
             }, options)
 
@@ -72,7 +87,7 @@ function withPropsWatch(Component) {
 
         checkWatchedProp(props, propPath) {
             const { lastValue, callback, options } = this.watchedProps[propPath]
-            const nextValue = get(props, propPath, undefined)
+            const nextValue = _.get(props, propPath, undefined)
 
             if (options.watchCondition(nextValue, lastValue)) {
                 this.watchedProps[propPath].lastValue = nextValue
