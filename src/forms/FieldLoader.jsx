@@ -77,13 +77,13 @@ class FieldLoader extends React.Component {
         }
 
         // Watch for other fields if required
-//         if (desc.onChange) {
-//             asArray(desc.onChange).forEach((w) => {
-//                 asArray(w.in).forEach((name) => {
-//                     watch(`fields.${name}`, props => this.handleOnChange(w, props))
-//                 })
-//             })
-//         }
+        if (desc.onChange) {
+            asArray(desc.onChange).forEach((w) => {
+                asArray(w.in).forEach((name) => {
+                    watch(`fields.${name}`, props => this.handleOnChange(w, props))
+                })
+            })
+        }
 
         // Extend the descriptor asynchronously
         const descPromise = Promise.resolve(this.props.desc.lazy())
@@ -100,7 +100,6 @@ class FieldLoader extends React.Component {
     }
 
     handleOnChange(onChange, props) {
-        // Select a subset of the context
         const fields = asArray(onChange.in).map(name => props.fields[name])
 
         const result = asFunc(onChange.setProps)(...fields)
@@ -109,20 +108,16 @@ class FieldLoader extends React.Component {
         Promise.method(asFunc(onChange.setProps))(...fields)
         .then((newProps) => {
             this.setState(newProps)
+            // Set the value
+            return Promise.method(asFunc(onChange.setValue))(...fields)
         })
-        .catch(e => console.error(`In 'onChange.setProps' of ${props.desc.id}:`, e))
-
-        // Set the value
-        Promise.method(asFunc(onChange.setValue))(...fields)
         .then((newValue) => {
             if (typeof newValue !== 'undefined') {
                 props.dispatch(autofill(props.formName, props.desc.name, newValue))
             }
+            // Set the initialValue
+            return Promise.method(asFunc(onChange.setInitialValue))(...fields)
         })
-        .catch(e => console.error(`In 'onChange.setValue' of ${props.desc.id}:`, e))
-
-        // Set the initialValue
-        Promise.method(asFunc(onChange.setInitialValue))(...fields)
         .then((initialValue) => {
             if (typeof initialValue !== 'undefined' && !props.fields[props.desc.name].initialValue) {
                 if (!props.meta.visited || props.meta.autofilled) {
@@ -130,8 +125,9 @@ class FieldLoader extends React.Component {
                 }
             }
         })
-        .catch(e => console.error(`In 'onChange.setInitialValue' of ${props.desc.id}:`, e))
-        return null
+        .catch(e => console.error(`In 'onChange.setProps' of ${props.desc.id}:`, e))
+
+        return null     
     }
 
     fieldProps() {

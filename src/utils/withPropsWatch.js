@@ -43,7 +43,9 @@ function withPropsWatch(Component) {
                 // Invoke check immediately?
                 checkNow: false,
                 // used to decide when to invoke the callback
-                watchCondition: (nextValue, lastValue) => !isEqual(nextValue, lastValue),
+                watchCondition: (nextValue, lastValue) => {
+                    return !isEqual(nextValue, lastValue)
+                },
             }, options)
 
             // Chain callbacks if there are some already
