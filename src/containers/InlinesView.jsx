@@ -199,16 +199,26 @@ class InlinesView extends React.Component {
         const itemsLength = this.state.items.filter(item => !item.deleted).length
         const newItemsLength = this.state.items.filter(item => !item.new).length
         const isExpandable = itemsLength > 0 && newItemsLength > 0
+
+        const showAddForm = () => {
+            if (desc.actions.add) {
+                return (
+                    <li className={itemsLength > 0 ? 'opposite' : 'initial'}>
+                        <button onClick={this.addItemForm}
+                            className="action-add">
+                            Add item
+                        </button>
+                    </li>
+                )
+            }
+        }
+
         return (
             <div className="inlines-view" ref={(c) => { this.inlinesView = c }}>
                 {this.state.message && <div>{this.state.message}</div>}
                 <div className="inlines-tools state-expanded">
                     <ul role="group" className="buttons">
-                        <li className={itemsLength > 0 ? 'opposite' : 'initial'}><button
-                            onClick={this.addItemForm}
-                            className="action-add"
-                            >Add item</button>
-                        </li>
+                        {showAddForm()}
                         {isExpandable && <li className="opposite expand-all"><button
                             onClick={() => this.handleExpandAll()}
                             aria-label="Expand all"

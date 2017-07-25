@@ -64,6 +64,23 @@ class InlineItemForm extends React.Component {
         const { desc, index, isAddForm, fields, values, error, anyTouched, form } = this.props
         const submit = isAddForm ? this.addItemHandler() : this.saveItemHandler()
         const inlinesItemId = createInlinesItemId(desc.id, index)
+
+        const showDeleteItem = () => {
+            if (desc.actions.delete) {
+                return (
+                    <li>
+                        <button
+                            type="button"
+                            aria-label="Delete"
+                            className="action-clear icon-only"
+                            onClick={this.deleteItemHandler()}>
+                            &zwnj;
+                        </button>
+                    </li>
+                )
+            }
+        }
+
         return (
             <section className="fieldset-container-group">
                 <header
@@ -82,12 +99,7 @@ class InlineItemForm extends React.Component {
                             className="action-save icon-only"
                             onClick={submit}
                             >&zwnj;</button></li>
-                        <li><button
-                            type="button"
-                            aria-label="Delete"
-                            className="action-clear icon-only"
-                            onClick={this.deleteItemHandler()}
-                            >&zwnj;</button></li>
+                        {showDeleteItem()}
                     </ul>
                 </header>
                 <form onSubmit={submit}>

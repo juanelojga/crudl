@@ -6,7 +6,7 @@ import fieldset from './fieldset'
 const tab = Joi.formView().provideId().keys({
     // Required
     title: Joi.string().required(),
-    actions: defineActions(['save', 'list', 'delete', 'add']).required(),
+    actions: defineActions(['save', 'list'], ['delete', 'add']).required(),
 
     // Either fields or fieldsets but not both
     fields: Joi.array().items(field),
